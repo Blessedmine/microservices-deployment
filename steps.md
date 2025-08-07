@@ -1,6 +1,14 @@
-## Let’s Start with Hands-on/Practical of Argo Rollouts with Canary Deployments.
+## Let’s Start with Hands-on/Practical of Argo Rollouts/Argorollout with Canary Deployments.
+
+### Foundation Setup
+- Environment Preparation
+- Set up cloud account (AWS)
+- Install local tools: Docker, kubectl, Helm, VS Code
+- Create GitHub repository for the project
+- Set up basic project structure
 
 ###Prerequisites
+create connection with your aws account
 Pre-Install Ubuntu 24.04 LTS Sudo User with admin privileges 32 GB RAM or more  8CPU / vCPU or more 50 GB free hard disk space or more Docker / Virtual Machine Manager – KVM & VirtualBox
 
 ##Install Docker
