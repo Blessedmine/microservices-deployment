@@ -1,0 +1,17 @@
+resources:
+  - adservice/adservice.yaml
+  - cartservice/cartservice.yaml
+  - cartservice/cartservice-config.yaml
+  - checkoutservice/checkoutservice.yaml
+  - checkoutservice/checkoutservice-config.yaml
+  - currencyservice/currencyservice.yaml
+  - emailservice/emailservice.yaml
+  - frontend/frontend.yaml
+  - frontend/frontend-config.yaml
+  - paymentservice/paymentservice.yaml
+  - productcatalogueservice/productcatalogueservice.yaml
+  - recommendationservice/recommendationservice.yaml
+  - recommendationservice/recommendationservice-config.yaml
+  - redis-cart/redis-cart.yaml
+  - shippingservice/shippingservice.yaml
+  - ingress.yaml

@@ -1,52 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: recommendationservice
-  namespace: default
+  name: frontend
   labels:
-    app: recommendationservice
+    app: frontend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: recommendationservice
+      app: frontend
   template:
     metadata:
       labels:
-        app: recommendationservice
+        app: frontend
     spec:
       containers:
         - name: server
-          image: gcr.io/google-samples/microservices-demo/recommendationservice:v0.1.0
+          image: gcr.io/google-samples/microservices-demo/frontend:v0.1.0
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef:
-                name: recommendationservice-config
+                name: frontend-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: recommendationservice
-  namespace: default
+  name: frontend
 spec:
+  type: ClusterIP
   selector:
-    app: recommendationservice
+    app: frontend
   ports:
     - port: 8080
       targetPort: 8080
-
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: recommendationservice
-  namespace: default
+  name: frontend
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: recommendationservice
+    name: frontend
   minReplicas: 2
   maxReplicas: 4
   metrics:
