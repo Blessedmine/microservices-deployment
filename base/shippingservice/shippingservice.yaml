@@ -45,7 +45,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: shippingservice
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 4
   metrics:
     - type: Resource

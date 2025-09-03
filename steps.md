@@ -69,4 +69,30 @@ Use ConfigMaps for environment-specific configurations.
 
 Add readiness and liveness probes for better reliability.
 
+During the project, I decided to create the app in 3 environment: Dev, Staging and Prod. Therefore, I used Kustomize and restructured the directory and manifest for the microservices
+
+Because I am using a single cluster for the project I have different ingress and namespaces each for the environment
+
+kubectl create namespace dev
+kubectl create namespace staging
+kubectl create namespace prod
+
+# for dev
+kubectl apply -k overlays/dev
+
+# for staging
+kubectl apply -k overlays/staging
+
+# for prod
+kubectl apply -k overlays/prod
+ 
+Only frontend has three environments (/dev, /staging, /prod), because that’s the entry point users access in a browser.
+
+This approach is simpler because:
+
+You don’t need to deploy every microservice three times.
+
+Only frontend is duplicated (by path) to simulate multiple environments for testing.
+
+Note: All environments share the same backend services.
 
