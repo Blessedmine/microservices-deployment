@@ -9,7 +9,7 @@ Install local tools: Docker, kubectl, Helm, and IntelJ.
 Create a GitHub repository and define the initial project structure.
 
 Phase 2: Kubernetes Deployment
-
+deploying 11 microservices
 Configure kubectl Access
 For EKS:
 aws eks update-kubeconfig --name microservice --region us-east-1
@@ -95,4 +95,26 @@ You don’t need to deploy every microservice three times.
 Only frontend is duplicated (by path) to simulate multiple environments for testing.
 
 Note: All environments share the same backend services.
+
+3.2. Manage deployments via ArgoCD for GitOps-driven delivery.
+
+Install ArgoCD in Your Cluster
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+
+Access the UI:
+
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+
+Then open https://localhost:8080 in your browser.
+
+The initial username is admin. Get the auto-generated password:
+
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+there is full management of the 11microservices in 3 environment
+
+This project provides an end-to-end DevOps workflow: from building microservices and containerizing them, to deploying on Kubernetes with GitOps, scaling in production
 

@@ -2,15 +2,98 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: microservice-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
+  ingressClassName: nginx
   rules:
-    - host: a8a6d648e7dc9411c8e123214b12a195-871065733.us-east-1.elb.amazonaws.com
+    - host: staging.a8a6d648e7dc9411c8e123214b12a195-871065733.us-east-1.elb.amazonaws.com
       http:
         paths:
-          - path: /staging(/|$)(.*)
+          - path: /staging/adservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: adservice
+                port:
+                  number: 8080
+
+          - path: /staging/cartservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cartservice
+                port:
+                  number: 8080
+
+          - path: /staging/checkoutservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: checkoutservice
+                port:
+                  number: 8080
+
+          - path: /staging/currencyservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: currencyservice
+                port:
+                  number: 8080
+
+          - path: /staging/emailservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: emailservice
+                port:
+                  number: 8080
+
+          - path: /staging/frontend(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend
+                port:
+                  number: 8080
+
+          - path: /staging/paymentservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: paymentservice
+                port:
+                  number: 8080
+
+          - path: /staging/productcatalogueservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: productcatalogueservice
+                port:
+                  number: 8080
+
+          - path: /staging/recommendationservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: recommendationservice
+                port:
+                  number: 8080
+
+          - path: /staging/redis-cart(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: redis-cart
+                port:
+                  number: 6379
+
+          - path: /staging/shippingservice(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: shippingservice
                 port:
                   number: 8080
