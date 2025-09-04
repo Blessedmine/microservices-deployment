@@ -1,120 +1,156 @@
+🚀 Project Workflow: GitOps-Driven Kubernetes Deployment of 11 Microservices
 Phase 1: Foundation Setup
+1.1 Environment Preparation
 
-Environment Preparation
+Cloud Setup:
 
-Set up a cloud account (AWS EKS or Azure AKS).
+Provision an Amazon EKS (Elastic Kubernetes Service) cluster.
 
-Install local tools: Docker, kubectl, Helm, and IntelJ.
+Configure the cluster with 3 worker nodes to host the 11 microservices efficiently.
 
-Create a GitHub repository and define the initial project structure.
+Local Tools Installation:
+Install required tools on your workstation:
+
+Docker
+
+kubectl
+
+IntelliJ IDEA (IDE for microservices development)
+
+Version Control:
+Create a GitHub repository and define the initial project structure (monorepo for all microservices + Kubernetes manifests).
 
 Phase 2: Kubernetes Deployment
-deploying 11 microservices
-Configure kubectl Access
-For EKS:
+2.1 Cluster Access & Namespaces
+
+Configure kubectl for EKS:
+
 aws eks update-kubeconfig --name microservice --region us-east-1
 
-Set Up Namespaces & RBAC
-Create namespaces:
-kubectl create namespace adservice
-kubectl create namespace cartservice
-kubectl create namespace checkoutservice
-kubectl create namespace currencyservice
-kubectl create namespace emailservice
-kubectl create namespace frontend
-kubectl create namespace paymentservice
-kubectl create namespace productcatalogue
-kubectl create namespace recommendationservice
-kubectl create namespace shippingservice
-kubectl create namespace redis-cart
 
-2.2 Service Deployment
-Steps:
-1. Create Kubernetes Manifests
-2. Deploy Service
-
-### **2.2 Service Deployment**
-#### **Steps:**
-1. **Create Kubernetes Manifests for the microservices**
-
-Configure Ingress
-
-Install NGINX Ingress Controller:
-helm install ingress-nginx ingress-nginx/ingress-nginx
-Define ingress.yaml for routing.
-Add the Helm repository (if not already added)
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx helm repo update
-
-kubectl apply -f ingress.yaml
-
-Install NGINX Ingress Controller in a dedicated namespace
-helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.type=LoadBalancer
-
-Check if Helm release exists
-
-helm list -A
-
-kubectl get deployments -n ingress-nginx 
-kubectl get pods -n ingress-nginx 
-kubectl get ingress -A 
-kubectl get svc -n ingress-nginx
-
-3.1 Scaling & Secrets
-Steps:
-Enable Horizontal Pod Autoscaler (HPA) for automatic scaling.
-
-Manage sensitive data with Secrets.
-
-Use ConfigMaps for environment-specific configurations.
-
-Add readiness and liveness probes for better reliability.
-
-During the project, I decided to create the app in 3 environment: Dev, Staging and Prod. Therefore, I used Kustomize and restructured the directory and manifest for the microservices
-
-Because I am using a single cluster for the project I have different ingress and namespaces each for the environment
+Create Namespaces:
 
 kubectl create namespace dev
 kubectl create namespace staging
 kubectl create namespace prod
+kubectl create namespace argocd
 
-# for dev
+2.2 Service Deployment
+Step 1: Create Kubernetes Manifests
+
+Write Deployment and Service manifests for all 11 microservices.
+
+Organize them into a base folder, and create overlays (dev, staging, prod) using Kustomize.
+
+Step 2: Configure Ingress
+
+Install NGINX Ingress Controller:
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+--namespace ingress-nginx \
+--create-namespace \
+--set controller.service.type=LoadBalancer
+
+
+Verify installation:
+
+kubectl get deployments -n ingress-nginx
+kubectl get pods -n ingress-nginx
+kubectl get svc -n ingress-nginx
+
+
+Apply ingress routing rules:
+
+kubectl apply -f ingress.yaml
+
+2.3 Scaling & Configuration Management
+
+Enable Horizontal Pod Autoscaler (HPA):
+Scale services automatically based on CPU/memory utilization.
+
+Manage Configurations:
+
+Use ConfigMaps for environment-specific configs.
+
+Use Secrets for sensitive data (e.g., database passwords, API keys).
+
+Reliability Enhancements:
+
+Add liveness and readiness probes to all services.
+
+2.4 Multi-Environment Deployment with Kustomize
+
+Deploy manifests for each environment:
+
+# Development
 kubectl apply -k overlays/dev
 
-# for staging
+# Staging
 kubectl apply -k overlays/staging
 
-# for prod
+# Production
 kubectl apply -k overlays/prod
- 
-Only frontend has three environments (/dev, /staging, /prod), because that’s the entry point users access in a browser.
 
-This approach is simpler because:
 
-You don’t need to deploy every microservice three times.
+Note:
 
-Only frontend is duplicated (by path) to simulate multiple environments for testing.
+Only the frontend service has 3 environments (/dev, /staging, /prod) since it’s the entry point for users.
 
-Note: All environments share the same backend services.
+All back-end services are shared across environments to keep the setup simple.
 
-3.2. Manage deployments via ArgoCD for GitOps-driven delivery.
+All deployments are distributed across the 3 worker nodes for availability and load balancing.
 
-Install ArgoCD in Your Cluster
-kubectl create namespace argocd
+Phase 3: GitOps with ArgoCD
+3.1 Install ArgoCD
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
+3.2 Configure ArgoCD Applications
 
-Access the UI:
+Create an argocd/applications.yaml manifest defining dev, staging, and prod applications.
+
+Apply it:
+
+kubectl apply -f argocd/applications.yaml
+
+3.3 Access the ArgoCD Web UI
+
+Check ArgoCD service:
+
+kubectl get svc -n argocd
+
+
+Port-forward (local access):
 
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 
-Then open https://localhost:8080 in your browser.
+Open: 👉 https://localhost:8080
 
-The initial username is admin. Get the auto-generated password:
+Login Credentials:
+
+Username: admin
+
+Password:
 
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
-there is full management of the 11microservices in 3 environment
 
-This project provides an end-to-end DevOps workflow: from building microservices and containerizing them, to deploying on Kubernetes with GitOps, scaling in production
+After login, you’ll see your Applications (dev, staging, prod) in the ArgoCD dashboard.
 
+✅ Final Outcome
+
+This project provides an end-to-end DevOps workflow:
+
+Develop and containerize 11 microservices.
+
+Deploy on Kubernetes using Kustomize and Ingress.
+
+Run workloads across a 3-node EKS cluster for scalability and resilience.
+
+Manage scaling, secrets, and configs.
+
+Enable GitOps-driven delivery with ArgoCD.
+
+Support multi-environment deployments (dev, staging, prod).
